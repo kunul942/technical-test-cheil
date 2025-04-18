@@ -5,8 +5,8 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using FluentValidation.AspNetCore;
 using Server.Validators;
-using Server.database;  // Make sure this matches your actual namespace
-using Server.Models;    // Make sure this matches your actual namespace
+using Server.database;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,11 +66,33 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+    options.AddPolicy("AdminOrOwner", policy => 
+        policy.RequireAssertion(context =>
+        {
+            var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null) return false;
+            
+            var routeId = context.Resource switch
+            {
+                HttpContext httpContext => httpContext.Request.RouteValues["id"]?.ToString(),
+                _ => null
+            };
+
+            return context.User.IsInRole("Admin") || 
+                  (userIdClaim.Value == routeId && context.User.IsInRole("User"));
+        }));
+});
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("UserDB"));
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -83,6 +105,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 
 app.Run();
