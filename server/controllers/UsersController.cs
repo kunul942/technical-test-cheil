@@ -45,6 +45,7 @@ namespace Server.Controllers
 
         // Get user by ID 
         [HttpGet("{id}")]
+        [Authorize(Policy = "AdminOrOwner")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
             try
@@ -55,10 +56,10 @@ namespace Server.Controllers
                     return NotFound(new { message = "User not found" });
                 }
 
-                var authorizationResult = await _authorizationService.AuthorizeAsync(
-                    User, user, "AdminOrOwner");
+                var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var isAdmin = User.IsInRole("Admin");
 
-                if (!authorizationResult.Succeeded)
+                if (!isAdmin && currentUserId != id.ToString())
                 {
                     return Forbid();
                 }
@@ -107,6 +108,7 @@ namespace Server.Controllers
 
         // Update user
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOrOwner")]
         public async Task<IActionResult> UpdateUser(int id, User user)
         {
             try
