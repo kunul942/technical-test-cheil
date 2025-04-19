@@ -2,32 +2,37 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 using FluentValidation.AspNetCore;
 using Server.Validators;
 using Server.database;
+using Server.Utilities;
+using Server.Models;
+using FluentValidation;
+using System.Text;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllers()
-    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<UserValidator>());
+// Add Controllers + FluentValidation
+builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation()
+                .AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
 
+// Configure Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Server API", Version = "v1" });
-    
+
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header using the Bearer scheme",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        Description = "JWT Authorization header using the Bearer scheme."
     });
-    
+
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -44,55 +49,64 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// JWT Configuration
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+// JWT Config
+var jwtSection = builder.Configuration.GetSection("JwtSettings");
+var secretKey = jwtSection["SecretKey"];
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]))
-    };
-});
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"])),
+            
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+            
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero,
+            
+            // important configuration for .NET 8 
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = ClaimTypes.NameIdentifier
+        };
+    });
 
-builder.Services.AddAuthorization();
-
+// Authorization Policies
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
     options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
-    options.AddPolicy("AdminOrOwner", policy => 
+    options.AddPolicy("AdminOrOwner", policy =>
+    {
         policy.RequireAssertion(context =>
         {
             var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null) return false;
-            
+
             var routeId = context.Resource switch
             {
                 HttpContext httpContext => httpContext.Request.RouteValues["id"]?.ToString(),
                 _ => null
             };
 
-            return context.User.IsInRole("Admin") || 
-                  (userIdClaim.Value == routeId && context.User.IsInRole("User"));
-        }));
+            return context.User.IsInRole("Admin") || (routeId != null && userIdClaim.Value == routeId && context.User.IsInRole("User"));
+        });
+    });
 });
 
+// DB Context (In-Memory)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("UserDB"));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Middleware setup
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -100,10 +114,32 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Seed default Admin user
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    if (!db.Users.Any())
+    {
+        var admin = new User
+        {
+            FirstName = "Admin",
+            LastName = "User",
+            Email = "admin@example.com",
+            Password = PasswordHasher.HashPassword("Admin123"),
+            Role = "Admin"
+        };
+
+        db.Users.Add(admin);
+        await db.SaveChangesAsync();
+
+        Console.WriteLine("Seeded initial admin user.");
+    }
+}
 
 app.Run();

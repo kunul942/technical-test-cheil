@@ -66,47 +66,30 @@ namespace Server.Controllers
 
         private string GenerateJwtToken(User user)
         {
-            try
+            var securityKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
+            
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
             {
-                var jwtSettings = _configuration.GetSection("JwtSettings");
-                if (jwtSettings == null || string.IsNullOrEmpty(jwtSettings["SecretKey"]))
-                {
-                    throw new ArgumentNullException("JWT configuration is missing");
-                }
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iss, _configuration["JwtSettings:Issuer"]),
+                new Claim(JwtRegisteredClaimNames.Aud, _configuration["JwtSettings:Audience"])
+            };
 
-                var key = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]);
-                if (key.Length < 32)
-                {
-                    throw new ArgumentException("JWT secret key is too short");
-                }
+            var token = new JwtSecurityToken(
+                issuer: _configuration["JwtSettings:Issuer"],
+                audience: _configuration["JwtSettings:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["JwtSettings:ExpiryInMinutes"])),
+                signingCredentials: credentials
+            );
 
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.Role, user.Role)
-                };
-
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(claims),
-                    Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpiryInMinutes"])),
-                    SigningCredentials = new SigningCredentials(
-                        new SymmetricSecurityKey(key),
-                        SecurityAlgorithms.HmacSha256Signature),
-                    Issuer = jwtSettings["Issuer"],
-                    Audience = jwtSettings["Audience"]
-                };
-
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-                return tokenHandler.WriteToken(token);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error generating JWT token");
-                throw;
-            }
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
