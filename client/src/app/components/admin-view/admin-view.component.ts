@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AuthHelper } from '../../helpers/auth.helper';
 
 interface User {
   id: string;
@@ -50,7 +51,11 @@ export class AdminViewComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private http: HttpClient, private dialog: MatDialog) {
+  constructor(
+      private http: HttpClient, 
+      private dialog: MatDialog,
+      private authHelper: AuthHelper)
+    {
     this.dataSource = new MatTableDataSource<User>([]);
   }
 
@@ -65,7 +70,7 @@ export class AdminViewComponent implements OnInit {
 
   loadUsers(): void {
     this.isLoading = true;
-    this.http.get<User[]>(this.apiUrl).subscribe({
+    this.http.get<User[]>(this.apiUrl, { headers: this.authHelper.getAuthHeaders() }).subscribe({
       next: (users) => {
         this.dataSource = new MatTableDataSource(users);
         this.dataSource.paginator = this.paginator;
@@ -102,7 +107,7 @@ export class AdminViewComponent implements OnInit {
   }
 
   updateUser(user: User): void {
-    this.http.put(`${this.apiUrl}/${user.id}`, user).subscribe({
+    this.http.put(`${this.apiUrl}/${user.id}`, user, { headers: this.authHelper.getAuthHeaders()}).subscribe({
       next: () => {
         this.loadUsers();
       },
@@ -131,7 +136,7 @@ export class AdminViewComponent implements OnInit {
   }
 
   deleteUser(userId: string): void {
-    this.http.delete(`${this.apiUrl}/${userId}`).subscribe({
+    this.http.delete(`${this.apiUrl}/${userId}`, { headers: this.authHelper.getAuthHeaders()}).subscribe({
       next: () => {
         this.loadUsers();
       },
