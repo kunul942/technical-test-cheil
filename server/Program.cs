@@ -88,7 +88,6 @@ builder.Services.AddAuthorization(options =>
             // Admin always has access
             if (context.User.IsInRole("Admin"))
             {
-                Console.WriteLine("DEBUG: User is Admin - access granted");
                 return true;
             }
 
