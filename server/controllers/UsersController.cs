@@ -27,6 +27,7 @@ namespace Server.Controllers
             _authorizationService = authorizationService;
         }
 
+        //Get users 
         [HttpGet]
         [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
@@ -42,6 +43,7 @@ namespace Server.Controllers
             }
         }
 
+        // Get user by ID 
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
@@ -70,6 +72,7 @@ namespace Server.Controllers
             }
         }
 
+        // Create new user
         [HttpPost]
         [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<User>> CreateUser(User user)
@@ -99,101 +102,40 @@ namespace Server.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        // public async Task<IActionResult> UpdateUser(int id, User user)
-        // {
-        //     try
-        //     {
-        //         if (user == null || id != user.Id)
-        //         {
-        //             return BadRequest(new { message = "Invalid user data" });
-        //         }
+        public record UserWithHttpContext(User User, HttpContext HttpContext);
 
-        //         var existingUser = await _context.Users.FindAsync(id);
-        //         if (existingUser == null)
-        //         {
-        //             return NotFound(new { message = "User not found" });
-        //         }
 
-        //         var authorizationResult = await _authorizationService.AuthorizeAsync(
-        //             User, existingUser, "AdminOrOwner");
-
-        //         if (!authorizationResult.Succeeded)
-        //         {
-        //             return Forbid();
-        //         }
-
-        //         // Update fields
-        //         existingUser.FirstName = user.FirstName;
-        //         existingUser.LastName = user.LastName;
-        //         existingUser.Email = user.Email;
-        //         existingUser.Role = user.Role;
-                
-        //         if (!string.IsNullOrEmpty(user.Password) && 
-        //             !PasswordHasher.VerifyPassword(user.Password, existingUser.Password))
-        //         {
-        //             existingUser.Password = PasswordHasher.HashPassword(user.Password);
-        //         }
-
-        //         try
-        //         {
-        //             await _context.SaveChangesAsync();
-        //         }
-        //         catch (DbUpdateConcurrencyException ex)
-        //         {
-        //             if (!UserExists(id))
-        //             {
-        //                 return NotFound(new { message = "User no longer exists" });
-        //             }
-        //             _logger.LogError(ex, $"Concurrency error updating user {id}");
-        //             throw;
-        //         }
-
-        //         return NoContent();
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         _logger.LogError(ex, $"Error updating user {id}");
-        //         return StatusCode(500, new { message = "An error occurred while updating the user" });
-        //     }
-        // }
+        // Update user
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, User user)
         {
             try
             {
-                if (user == null || id != user.Id)
-                {
-                    return BadRequest(new { message = "Invalid user data" });
-                }
-
+                // Search for existing user
                 var existingUser = await _context.Users.FindAsync(id);
                 if (existingUser == null)
                 {
                     return NotFound(new { message = "User not found" });
                 }
 
-                // Authorization check
-                var authorizationResult = await _authorizationService.AuthorizeAsync(
-                    User, existingUser, "AdminOrOwner");
+                // Get current user ID and role
+                var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var isAdmin = User.IsInRole("Admin");
 
-                if (!authorizationResult.Succeeded)
+                // Only the user themselves or an admin can update the user
+                if (!isAdmin && currentUserId != id.ToString())
                 {
                     return Forbid();
                 }
 
-                // Get current user info
-                var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                var isAdmin = User.IsInRole("Admin");
-
-                // Regular users can't change their role
+                // Users cannot change their own role
                 if (!isAdmin && existingUser.Role != user.Role)
                 {
                     return BadRequest(new { message = "Only admins can change roles" });
                 }
 
-                // Prevent removing the last admin
-                if (isAdmin && existingUser.Role == "Admin" && user.Role == "User")
+                // Cannot degrade the last admin
+                if (isAdmin && existingUser.Role == "Admin" && user.Role != "Admin")
                 {
                     var adminCount = await _context.Users
                         .Where(u => u.Role == "Admin" && u.Id != id)
@@ -205,18 +147,18 @@ namespace Server.Controllers
                     }
                 }
 
-                // Update fields
+                // Fields everyone can update
                 existingUser.FirstName = user.FirstName;
                 existingUser.LastName = user.LastName;
                 existingUser.Email = user.Email;
-                
-                // Only admins can change roles
+
+                // Only admin can update the role
                 if (isAdmin)
                 {
                     existingUser.Role = user.Role;
                 }
 
-                // Password update (if provided)
+                // Only update password if provided and different from existing
                 if (!string.IsNullOrEmpty(user.Password) && 
                     !PasswordHasher.VerifyPassword(user.Password, existingUser.Password))
                 {
@@ -224,7 +166,7 @@ namespace Server.Controllers
                 }
 
                 await _context.SaveChangesAsync();
-                return NoContent();
+                return Ok(existingUser);
             }
             catch (Exception ex)
             {
@@ -233,6 +175,7 @@ namespace Server.Controllers
             }
         }
 
+        // Delete user
         [HttpDelete("{id}")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteUser(int id)
@@ -255,11 +198,6 @@ namespace Server.Controllers
                 _logger.LogError(ex, $"Error deleting user {id}");
                 return StatusCode(500, new { message = "An error occurred while deleting the user" });
             }
-        }
-
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
         }
     }
 }

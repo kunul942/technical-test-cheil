@@ -85,17 +85,25 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOrOwner", policy =>
     {
         policy.RequireAssertion(context =>
-        {
-            var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null) return false;
-
-            var routeId = context.Resource switch
+        {   
+            // Admin always has access
+            if (context.User.IsInRole("Admin"))
             {
-                HttpContext httpContext => httpContext.Request.RouteValues["id"]?.ToString(),
-                _ => null
-            };
+                Console.WriteLine("DEBUG: User is Admin - access granted");
+                return true;
+            }
 
-            return context.User.IsInRole("Admin") || (routeId != null && userIdClaim.Value == routeId && context.User.IsInRole("User"));
+            var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var httpContext = context.Resource as HttpContext;
+            var routeId = httpContext?.Request.RouteValues["id"]?.ToString();
+
+            if (userIdClaim == null || routeId == null)
+            {
+                return false;
+            }
+
+            var result = userIdClaim == routeId;
+            return result;
         });
     });
 });
