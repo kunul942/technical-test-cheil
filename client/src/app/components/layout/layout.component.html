@@ -1,25 +1,28 @@
-<mat-toolbar color="primary">
-  <span>Admin Dashboard</span>
+<mat-toolbar color="primary" class="toolbar">
+  <span class="app-title">
+    <mat-icon>{{ isAdmin ? 'admin_panel_settings' : 'account_circle' }}</mat-icon>
+    {{ isAdmin ? 'Admin' : 'User' }}
+  </span>
   
   <span class="spacer"></span>
   
-  <button mat-button [matMenuTriggerFor]="menu">
-    <mat-icon>account_circle</mat-icon>
+  <button mat-button [matMenuTriggerFor]="menu" class="user-menu">
     {{ authService.currentUserValue?.email }}
+    <mat-icon>arrow_drop_down</mat-icon>
   </button>
   
-  <mat-menu #menu="matMenu">
+  <mat-menu #menu="matMenu" class="user-dropdown">
     <button mat-menu-item routerLink="/profile">
       <mat-icon>person</mat-icon>
-      Profile
+      <span>Profile</span>
     </button>
     <button *ngIf="isAdmin" mat-menu-item routerLink="/admin">
       <mat-icon>admin_panel_settings</mat-icon>
-      Admin Panel
+      <span>Admin Panel</span>
     </button>
     <button mat-menu-item (click)="logout()">
-      <mat-icon>logout</mat-icon>
-      Logout
+      <mat-icon>exit_to_app</mat-icon>
+      <span>Logout</span>
     </button>
   </mat-menu>
 </mat-toolbar>
