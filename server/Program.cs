@@ -13,6 +13,17 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//  Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 // Add Controllers + FluentValidation
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation()
@@ -120,6 +131,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
