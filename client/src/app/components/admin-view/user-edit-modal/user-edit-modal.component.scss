@@ -1,0 +1,70 @@
+
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+h2.mat-dialog-title {
+  font-weight: 500;
+  color: #3f51b5;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  
+  mat-icon {
+    margin-right: 8px;
+    color: #3f51b5;
+  }
+}
+
+.mat-dialog-content {
+  padding: 16px 24px;
+  min-height: 300px;
+}
+
+.mat-dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  justify-content: flex-end;
+  
+  button {
+    margin-left: 8px;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    
+    &[color="primary"] {
+      background-color: #3f51b5;
+      color: white;
+    }
+  }
+}
+
+.password-field {
+  position: relative;
+  
+  .toggle-password {
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translateY(50%);
+    z-index: 2;
+  }
+}
+
+.mat-error {
+  font-size: 12px;
+  margin-top: -16px;
+  margin-bottom: 8px;
+}
+
+.mat-hint {
+  font-size: 12px;
+  color: #757575;
+}
+
+.mat-form-field-outline {
+  background-color: white;
+  border-radius: 4px;
+}

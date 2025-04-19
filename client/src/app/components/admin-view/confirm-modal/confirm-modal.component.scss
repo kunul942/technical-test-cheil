@@ -1,0 +1,56 @@
+
+
+h2.mat-dialog-title {
+  font-weight: 500;
+  color: #f44336;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  
+  mat-icon {
+    margin-right: 8px;
+    color: #f44336;
+  }
+}
+
+.mat-dialog-content {
+  padding: 16px 24px;
+  color: #616161;
+  
+  p {
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.mat-dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  justify-content: flex-end;
+  
+  button {
+    margin-left: 8px;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    
+    &[color="warn"] {
+      background-color: #f44336;
+      color: white;
+    }
+  }
+}
+
+.warning-icon {
+  color: #ff9800;
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  margin-right: 16px;
+}
+
+.warning-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
