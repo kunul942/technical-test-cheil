@@ -34,7 +34,7 @@ export class AuthService {
 
   public get isAdmin(): boolean {
     const user = this.currentUserValue;
-    return user && user.role === 'admin';
+    return user && user.role === 'Admin';
   }
 
   login(email: string, password: string): Observable<any> {
@@ -47,10 +47,9 @@ export class AuthService {
             
             // Create user object from token
             const user = {
-              id: decodedToken.sub || decodedToken.userId, // standard claims use 'sub'
+              id:response.userId, // standard claims use 'sub'
               email: decodedToken.email,
-              role: decodedToken.role,
-              token: response.token
+              role: response.role,
             };
 
             // Store token and user in localStorage

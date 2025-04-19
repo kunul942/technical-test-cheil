@@ -67,10 +67,11 @@ export class LoginComponent {
     }
   }
 
+  
   onSubmit() {
     this.submitted = true;
     if (this.loginForm.invalid) return;
-
+  
     this.loading = true;
     this.error = '';
     
@@ -79,9 +80,16 @@ export class LoginComponent {
       this.loginForm.value.password
     ).subscribe({
       next: () => {
-        const redirectUrl = this.route.snapshot.queryParams['returnUrl'] || 
-                          (this.authService.isAdmin ? '/admin' : '/profile');
-        this.router.navigate([redirectUrl]);
+        // Verify if there is returnUrl in queryParams
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+        
+        if (returnUrl) {
+          this.router.navigateByUrl(returnUrl);
+        } else {
+          // Redirect based on the role
+          const redirectUrl = this.authService.isAdmin ? '/admin' : '/profile';
+          this.router.navigate([redirectUrl]);
+        }
       },
       error: (error) => {
         this.loading = false;
