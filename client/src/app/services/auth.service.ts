@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
@@ -59,8 +59,12 @@ export class AuthService {
             // Update the current user subject
             this.currentUserSubject.next(user);
           }
+        }),
+        catchError((error: HttpErrorResponse) => {
+          console.log(error,'Error during login:', error.error?.message);
+          return throwError(() => error.error?.message || 'Invalid email or password');         
         })
-      );
+      )
   }
 
   logout(): void {
