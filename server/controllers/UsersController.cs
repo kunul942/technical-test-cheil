@@ -45,7 +45,7 @@ namespace Server.Controllers
 
         // Get user by ID 
         [HttpGet("{id}")]
-        [Authorize(Policy = "AdminOrOwner")]
+        [Authorize(Policy = "AdminAndUser")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
             try
@@ -108,7 +108,7 @@ namespace Server.Controllers
 
         // Update user
         [HttpPut("{id}")]
-        [Authorize(Policy = "AdminOrOwner")]
+        [Authorize(Policy = "AdminAndUser")]
         public async Task<IActionResult> UpdateUser(int id, User user)
         {
             try

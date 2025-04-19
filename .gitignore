@@ -1,6 +1,5 @@
 # IDE/Editor generated files
 .vs/
-.vscode/
 .idea/
 *.user
 *.suo
@@ -42,38 +41,59 @@ _ReSharper.*
 
 
 # Angular
+# Angular specific
+/dist
+/client/dist
+/client/tmp
+/client/out-tsc
+/client/.angular
+/client/.sass-cache
 
-# Node dependencies
-node_modules/
-.npm
+# Node
+/client/node_modules
+/client/npm-debug.log
+/client/yarn-error.log
+/client/package-lock.json
+/client/yarn.lock
 
-# Development environment
-/.angular/cache
-dist/
-
-# Local configuration files
-/environments/environment.ts
-/environments/environment.prod.ts
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# IDE/Editor
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Temporary files
-*.tmp
-*.bak
-
-# OS-specific files
-.DS_Store
-Thumbs.db
+# IDEs and editors
+/client/.idea
+/client/.vscode
+/client/*.launch
+/client/.settings
+/client/*.sublime-workspace
 
 # Testing
-/coverage
-/junit.xml
+/client/coverage
+/client/karma-report
+/client/testem.log
+
+# Environment files
+/client/.env
+/client/.env.local
+/client/.env.*.local
+
+# Debug logs
+/client/*.log
+/client/logs
+
+# System files
+.DS_Store
+Thumbs.db
+/client/.DS_Store
+/client/Thumbs.db
+
+# Build artifacts
+/client/bazel-out
+/client/.cache
+/client/connect.lock
+
+# Auto-generated files
+/client/src/environments/environment.ts
+/client/src/environments/environment.prod.ts
+/client/src/environments/environment.*.ts
+
+# Custom
+/client/.history
+/client/.scannerwork
+/client/.sonarlint
