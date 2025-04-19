@@ -94,14 +94,35 @@ export class AdminViewComponent implements OnInit {
   }
 
   openEditDialog(user: User): void {
+    const isNewUser = !user.id; // Check if this is a new user (no ID)
     const dialogRef = this.dialog.open(UserEditModalComponent, {
       width: '500px',
       data: { ...user }
     });
-
+  
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.updateUser(result);
+        if (isNewUser) {
+          this.createUser(result);
+        } else {
+          this.updateUser(result);
+        }
+      }
+    });
+  }
+  
+  createUser(user: User): void {
+    // Remove any empty ID field before sending
+    const { id, ...userWithoutId } = user;
+    
+    this.http.post<User>(this.apiUrl, userWithoutId, { 
+      headers: this.authHelper.getAuthHeaders() 
+    }).subscribe({
+      next: () => {
+        this.loadUsers(); // Refresh the list
+      },
+      error: (error) => {
+        console.error('Error creating user:', error);
       }
     });
   }

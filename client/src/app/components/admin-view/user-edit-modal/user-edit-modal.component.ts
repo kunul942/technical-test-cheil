@@ -45,14 +45,17 @@ export class UserEditModalComponent {
       firstName: [data.firstName || '', Validators.required],
       lastName: [data.lastName || '', Validators.required],
       email: [data.email || '', [Validators.required, Validators.email]],
-      password: ['', this.isEditMode ? null : Validators.required],
+      password: [data.password, this.isEditMode ? null : Validators.required],
       role: [data.role || 'User', Validators.required]
     });
   }
 
   onSave(): void {
     if (this.userForm.valid) {
-      this.dialogRef.close(this.userForm.value);
+      const formValue = this.userForm.value;
+      // For new users, remove the empty ID field
+      const result = this.isEditMode ? formValue : (({ id, ...rest }) => rest)(formValue);
+      this.dialogRef.close(result);
     }
   }
 
