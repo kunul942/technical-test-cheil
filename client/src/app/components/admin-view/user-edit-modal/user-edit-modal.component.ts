@@ -45,7 +45,7 @@ export class UserEditModalComponent {
       firstName: [data.firstName || '', Validators.required],
       lastName: [data.lastName || '', Validators.required],
       email: [data.email || '', [Validators.required, Validators.email]],
-      password: ['', this.isEditMode ? null : Validators.required],
+      password: ['', [Validators.required, Validators.minLength(4)]],
       role: [data.role || 'User', Validators.required]
     });
   }
@@ -53,7 +53,6 @@ export class UserEditModalComponent {
   onSave(): void {
     if (this.userForm.valid) {
       const formValue = this.userForm.value;
-      // For new users, remove the empty ID field
       const result = this.isEditMode ? formValue : (({ id, ...rest }) => rest)(formValue);
       this.dialogRef.close(result);
     }

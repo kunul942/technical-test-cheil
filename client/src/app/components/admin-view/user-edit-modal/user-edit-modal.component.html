@@ -31,13 +31,19 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Password</mat-label>
-      <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'" [required]="!isEditMode">
+      <input matInput formControlName="password" 
+             [type]="hidePassword ? 'password' : 'text'" 
+             required
+             minlength="4">
       <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword">
         <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
       </button>
-      <mat-hint *ngIf="isEditMode">Leave blank to keep current password</mat-hint>
-      <mat-error *ngIf="!isEditMode && userForm.get('password')?.hasError('required')">
+      <mat-hint>Password must be at least 4 characters</mat-hint>
+      <mat-error *ngIf="userForm.get('password')?.hasError('required')">
         Password is required
+      </mat-error>
+      <mat-error *ngIf="userForm.get('password')?.hasError('minlength')">
+        Password must be at least 4 characters long
       </mat-error>
     </mat-form-field>
 
