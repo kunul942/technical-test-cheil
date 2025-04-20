@@ -124,7 +124,7 @@ To access protected endpoints in Postman (or similar tools), you'll need to auth
 Authorization: Bearer <jwt-token>
 ```
 
-## Frontend Setup
+# Frontend Setup
 
 ### Prerequisites
 
