@@ -162,4 +162,21 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+
+app.MapGet("/", () =>
+{
+    return Results.Text(
+        "API is running!\n\n" +
+        "Available endpoints:\n" +
+        "- GET /api/auth/login\n" +
+        "- GET /api/users\n" +
+        "- GET /api/users/{id}\n" +
+        "- POST /api/users\n" +
+        "- PUT /api/users/{id}\n" +
+        "- DELETE /api/users/{id}\n\n" +
+        "For full documentation, visit: /swagger",
+        contentType: "text/plain"
+    );
+});
+
 app.Run();
