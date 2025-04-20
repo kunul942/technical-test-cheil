@@ -16,6 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthHelper } from '../../helpers/auth.helper';
+import { ToastHelper } from '../../helpers/toast.helper';
 
 interface User {
   id: string;
@@ -54,8 +55,9 @@ export class AdminViewComponent implements OnInit {
   constructor(
       private http: HttpClient, 
       private dialog: MatDialog,
-      private authHelper: AuthHelper)
-    {
+      private authHelper: AuthHelper,
+      private toast: ToastHelper
+  ){
     this.dataSource = new MatTableDataSource<User>([]);
   }
 
@@ -120,9 +122,11 @@ export class AdminViewComponent implements OnInit {
     }).subscribe({
       next: () => {
         this.loadUsers(); // Refresh the list
+        this.toast.showSuccess('User created successfully!');
       },
       error: (error) => {
         console.error('Error creating user:', error);
+        this.toast.showError('Error creating user. Please try again.');
       }
     });
   }
@@ -131,9 +135,11 @@ export class AdminViewComponent implements OnInit {
     this.http.put(`${this.apiUrl}/${user.id}`, user, { headers: this.authHelper.getAuthHeaders()}).subscribe({
       next: () => {
         this.loadUsers();
+        this.toast.showSuccess('User updated successfully!');
       },
       error: (error) => {
         console.error('Error updating user:', error);
+        this.toast.showError('Error updating user. Please try again.');
       }
     });
   }
@@ -160,9 +166,11 @@ export class AdminViewComponent implements OnInit {
     this.http.delete(`${this.apiUrl}/${userId}`, { headers: this.authHelper.getAuthHeaders()}).subscribe({
       next: () => {
         this.loadUsers();
+        this.toast.showSuccess('User deleted successfully!');
       },
       error: (error) => {
         console.error('Error deleting user:', error);
+        this.toast.showError('Error deleting user. Please try again.');
       }
     });
   }
