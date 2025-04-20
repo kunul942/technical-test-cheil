@@ -126,7 +126,7 @@ export class AdminViewComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error creating user:', error);
-        this.toast.showError('Error creating user. Please try again.');
+        this.toast.showError(error.error.message);
       }
     });
   }
@@ -138,8 +138,7 @@ export class AdminViewComponent implements OnInit {
         this.toast.showSuccess('User updated successfully!');
       },
       error: (error) => {
-        console.error('Error updating user:', error);
-        this.toast.showError('Error updating user. Please try again.');
+        this.toast.showError(error.error.message);
       }
     });
   }
@@ -170,7 +169,7 @@ export class AdminViewComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error deleting user:', error);
-        this.toast.showError('Error deleting user. Please try again.');
+        this.toast.showError(error.error.message);
       }
     });
   }
