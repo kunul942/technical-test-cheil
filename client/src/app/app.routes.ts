@@ -5,6 +5,9 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
 import { LayoutComponent } from './components/layout/layout.component';
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
+import { TaskListComponent } from './components/tasks/task-list/task-list.component';
+import { TaskFormComponent } from './components/tasks/task-form/task-form.component';
+import { TaskDetailsComponent } from './components/tasks/task-details/task-details.component';
 
 export const routes: Routes = [
   { 
@@ -24,6 +27,32 @@ export const routes: Routes = [
         path: 'profile', 
         component: UserProfileComponent, 
         canActivate: [AuthGuard] 
+      },
+      // Nuevas rutas para tareas
+      { 
+        path: 'tasks', 
+        children: [
+          { 
+            path: '', 
+            component: TaskListComponent, 
+            canActivate: [AuthGuard] 
+          },
+          { 
+            path: 'new', 
+            component: TaskFormComponent, 
+            canActivate: [AuthGuard] 
+          },
+          { 
+            path: ':id', 
+            component: TaskDetailsComponent, 
+            canActivate: [AuthGuard] 
+          },
+          { 
+            path: ':id/edit', 
+            component: TaskFormComponent, 
+            canActivate: [AuthGuard] 
+          }
+        ]
       },
       { 
         path: '', 

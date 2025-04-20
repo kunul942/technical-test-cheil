@@ -1,0 +1,48 @@
+<div class="details-container">
+  <button mat-button (click)="router.navigate(['/tasks'])">
+    <mat-icon>arrow_back</mat-icon> Back to Tasks
+  </button>
+
+  <div *ngIf="isLoading" class="loading-spinner">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <mat-card *ngIf="!isLoading && task" class="task-card">
+    <mat-card-header>
+      <mat-card-title>{{ task.title }}</mat-card-title>
+      <mat-card-subtitle>
+        Created: {{ task.createdAt | date:'mediumDate' }}
+      </mat-card-subtitle>
+      <mat-chip-set>
+        <mat-chip [color]="task.isCompleted ? 'primary' : 'warn'" selected>
+          {{ task.isCompleted ? 'Completed' : 'Pending' }}
+        </mat-chip>
+      </mat-chip-set>
+    </mat-card-header>
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <p class="task-description">{{ task.description }}</p>
+      
+      <div *ngIf="assignedUser" class="assigned-user">
+        <h3>Assigned To:</h3>
+        <p>{{ assignedUser.firstName }} ({{ assignedUser.email }})</p>
+      </div>
+    </mat-card-content>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="toggleComplete()">
+        <mat-icon>{{ task.isCompleted ? 'undo' : 'check' }}</mat-icon>
+        {{ task.isCompleted ? 'Mark Pending' : 'Mark Complete' }}
+      </button>
+      <button mat-raised-button color="accent" [routerLink]="['/tasks', task.id, 'edit']">
+        <mat-icon>edit</mat-icon> Edit
+      </button>
+      <button mat-raised-button color="warn" (click)="deleteTask()">
+        <mat-icon>delete</mat-icon> Delete
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

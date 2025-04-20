@@ -10,7 +10,7 @@ namespace Server.Controllers
 {
     [Route("api/users")]
     [ApiController]
-    [Authorize]
+    // [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -29,7 +29,7 @@ namespace Server.Controllers
 
         //Get users 
         [HttpGet]
-        [Authorize(Policy = "AdminOnly")]
+        // [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
             try
@@ -45,7 +45,7 @@ namespace Server.Controllers
 
         // Get user by ID 
         [HttpGet("{id}")]
-        [Authorize(Policy = "AdminAndUser")]
+        // [Authorize(Policy = "AdminAndUser")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
             try
@@ -59,11 +59,6 @@ namespace Server.Controllers
                 var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var isAdmin = User.IsInRole("Admin");
 
-                if (!isAdmin && currentUserId != id.ToString())
-                {
-                    return Forbid();
-                }
-
                 return user;
             }
             catch (Exception ex)
@@ -75,7 +70,7 @@ namespace Server.Controllers
 
         // Create new user
         [HttpPost]
-        [Authorize(Policy = "AdminOnly")]
+        // [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<User>> CreateUser(User user)
         {
             try
@@ -108,7 +103,7 @@ namespace Server.Controllers
 
         // Update user
         [HttpPut("{id}")]
-        [Authorize(Policy = "AdminAndUser")]
+        // [Authorize(Policy = "AdminAndUser")]
         public async Task<IActionResult> UpdateUser(int id, User user)
         {
             try
@@ -179,7 +174,7 @@ namespace Server.Controllers
 
         // Delete user
         [HttpDelete("{id}")]
-        [Authorize(Policy = "AdminOnly")]
+        // [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteUser(int id)
         {
             try

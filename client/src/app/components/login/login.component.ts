@@ -40,7 +40,7 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private router: Router,
+    public router: Router,
     private authService: AuthService,
     private snackBar: MatSnackBar
   ) {

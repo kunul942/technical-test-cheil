@@ -1,0 +1,41 @@
+.assign-container {
+  padding: 32px 24px;
+  min-height: calc(100vh - 64px);
+
+  mat-card {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.some-class {
+  color: #757575; 
+}
+
+@media (max-width: 600px) {
+  .assign-container {
+    padding: 16px;
+
+    mat-card {
+      padding: 16px;
+    }
+  }
+}

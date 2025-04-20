@@ -1,0 +1,88 @@
+$my-grey: #757575; 
+
+.some-class {
+  color: $my-grey;
+}
+.details-container {
+  padding: 32px 24px;
+  min-height: calc(100vh - 64px);
+  
+  button[mat-button] {
+    margin-bottom: 24px;
+  }
+}
+
+.task-card {
+  max-width: 800px;
+  margin: 0 auto;
+  
+  mat-card-header {
+    mat-card-title {
+      font-size: 24px;
+      font-weight: 500;
+    }
+    
+    mat-card-subtitle {
+      margin-top: 8px;
+    }
+    
+    mat-chip-list {
+      margin-left: auto;
+    }
+  }
+  
+  .task-description {
+    white-space: pre-line;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 24px 0;
+  }
+  
+  .assigned-user {
+    margin-top: 32px;
+    
+    h3 {
+      color: $my-grey;
+      margin-bottom: 8px;
+    }
+    
+    p {
+      font-size: 16px;
+    }
+  }
+  
+  mat-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    padding: 16px;
+  }
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  
+  mat-spinner {
+    circle {
+      stroke: #3f51b5;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .details-container {
+    padding: 16px;
+  }
+  
+  .task-card mat-card-actions {
+    flex-direction: column;
+    gap: 8px;
+    
+    button {
+      width: 100%;
+    }
+  }
+}

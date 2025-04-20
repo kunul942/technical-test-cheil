@@ -1,0 +1,34 @@
+<div class="assign-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Assign Task</mat-card-title>
+      <mat-card-subtitle *ngIf="task">Task: {{ task.title }}</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <form *ngIf="!isLoading">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Select User</mat-label>
+          <mat-select [(ngModel)]="selectedUserId" name="userId">
+            <mat-option *ngFor="let user of users" [value]="user.id">
+              {{ user.firstName }} ({{ user.email }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+      
+      <div *ngIf="isLoading" class="loading-spinner">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    </mat-card-content>
+    
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="assignTask()" [disabled]="!selectedUserId || isLoading">
+        Assign Task
+      </button>
+      <button mat-button (click)="router.navigate(['/tasks', taskId])">
+        Cancel
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

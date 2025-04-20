@@ -1,0 +1,49 @@
+<div class="report-container">
+  <h2>Task Reports</h2>
+  
+  <div *ngIf="isLoading" class="loading-spinner">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <div *ngIf="!isLoading" class="report-grid">
+    <mat-card class="report-card">
+      <mat-card-header>
+        <mat-card-title>Completed Tasks</mat-card-title>
+        <mat-icon mat-card-avatar color="primary">check_circle</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <h1>{{ completedTasks }}</h1>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="report-card">
+      <mat-card-header>
+        <mat-card-title>Pending Tasks</mat-card-title>
+        <mat-icon mat-card-avatar color="warn">pending_actions</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <h1>{{ pendingTasks }}</h1>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="report-card">
+      <mat-card-header>
+        <mat-card-title>Total Tasks</mat-card-title>
+        <mat-icon mat-card-avatar color="accent">format_list_numbered</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <h1>{{ totalTasks }}</h1>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="report-card">
+      <mat-card-header>
+        <mat-card-title>Completion Rate</mat-card-title>
+        <mat-icon mat-card-avatar color="primary">trending_up</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <h1>{{ completionPercentage }}%</h1>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

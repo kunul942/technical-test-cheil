@@ -3,6 +3,12 @@
     <mat-icon>{{ isAdmin ? 'admin_panel_settings' : 'account_circle' }}</mat-icon>
     {{ isAdmin ? 'Admin' : 'User' }}
   </span>
+
+  <!-- Agrega este botón/navegación principal -->
+  <button mat-button routerLink="/tasks" routerLinkActive="active-link">
+    <mat-icon>task</mat-icon>
+    Tasks
+  </button>
   
   <span class="spacer"></span>
   
@@ -19,6 +25,11 @@
     <button *ngIf="isAdmin" mat-menu-item routerLink="/admin">
       <mat-icon>admin_panel_settings</mat-icon>
       <span>Admin Panel</span>
+    </button>
+    <!-- Opcional: Agrega también aquí un acceso rápido -->
+    <button mat-menu-item routerLink="/tasks">
+      <mat-icon>task</mat-icon>
+      <span>My Tasks</span>
     </button>
     <button mat-menu-item (click)="logout()">
       <mat-icon>exit_to_app</mat-icon>
