@@ -190,6 +190,20 @@ namespace Server.Controllers
                     return NotFound(new { message = "User not found" });
                 }
 
+                // Check if user being deleted is an admin
+                if (user.Role == "Admin")
+                {
+                    // Count remaining admins excluding this one
+                    var remainingAdmins = await _context.Users
+                        .Where(u => u.Role == "Admin" && u.Id != id)
+                        .CountAsync();
+
+                    if (remainingAdmins == 0)
+                    {
+                        return BadRequest(new { message = "Cannot delete the last admin" });
+                    }
+                }
+
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
 
