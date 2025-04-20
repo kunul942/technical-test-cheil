@@ -93,7 +93,7 @@ Ensure your appsettings.json includes the following configuration for JWT authen
     "SecretKey": "this-is-a-very-strong-secret-key!!!",
     "Issuer": "http://localhost:5242",
     "Audience": "http://localhost:5242",
-    "ExpiryInMinutes": 1440
+    "ExpiryInMinutes": 120
   }
 }
 ```
