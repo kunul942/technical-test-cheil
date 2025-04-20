@@ -32,6 +32,14 @@ export class AuthHelper {
     });
   }
 
+  getUserId(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+    
+    const userData = localStorage.getItem('auth_user');
+    return userData ? JSON.parse(userData).id : null;
+  }
+
   // Store the token
   setToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);

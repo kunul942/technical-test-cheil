@@ -1,1 +1,52 @@
-<p>user-profile works!</p>
+<div class="profile-container">
+  <mat-card *ngIf="user" class="profile-card">
+    <mat-card-header class="profile-header">
+      <mat-card-title class="profile-title">My Profile</mat-card-title>
+      <button mat-icon-button class="edit-icon" (click)="openEditDialog()">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </mat-card-header>
+
+    <mat-divider class="profile-divider"></mat-divider>
+
+    <mat-card-content class="profile-content">
+      <div class="profile-details">
+        <div class="detail-row">
+          <mat-icon class="detail-icon">person</mat-icon>
+          <div class="detail-content">
+            <span class="detail-label">First Name</span>
+            <span class="detail-value">{{ user.firstName }}</span>
+          </div>
+        </div>
+        
+        <div class="detail-row">
+          <mat-icon class="detail-icon">person_outline</mat-icon>
+          <div class="detail-content">
+            <span class="detail-label">Last Name</span>
+            <span class="detail-value">{{ user.lastName }}</span>
+          </div>
+        </div>
+        
+        <div class="detail-row">
+          <mat-icon class="detail-icon">email</mat-icon>
+          <div class="detail-content">
+            <span class="detail-label">Email</span>
+            <span class="detail-value">{{ user.email }}</span>
+          </div>
+        </div>
+        
+        <div class="detail-row">
+          <mat-icon class="detail-icon">security</mat-icon>
+          <div class="detail-content">
+            <span class="detail-label">Role</span>
+            <span class="detail-value">{{ user.role }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div *ngIf="isLoading" class="loading-spinner">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+</div>

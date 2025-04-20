@@ -45,7 +45,7 @@ export class UserEditModalComponent {
       firstName: [data.firstName || '', Validators.required],
       lastName: [data.lastName || '', Validators.required],
       email: [data.email || '', [Validators.required, Validators.email]],
-      password: [data.password, this.isEditMode ? null : Validators.required],
+      password: ['', this.isEditMode ? null : Validators.required],
       role: [data.role || 'User', Validators.required]
     });
   }
