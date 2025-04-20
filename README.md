@@ -7,6 +7,7 @@
 - [API Documentation](#api-documentation)
 - [Default Admin Credentials](#default-admin-credentials)
 - [Frontend Setup](#frontend-setup)
+- [Completed Bonuses](#completed-bonuses)
 - [Running the Application](#running-the-application)
 
 ---
@@ -154,6 +155,14 @@ http://localhost:4200/
 ```
 
 In order to Login to the application, please refer to [Default Admin Credentials](#default-admin-credentials).
+
+
+## Completed Bonuses
+- Add pagination for the user list on the frontend.
+- Implement search functionality to filter users by name or email.
+- Use a third-party UI component library (like Angular Material) for a better user
+experience.
+- Use a service like Swagger to document the API.
 
 ## Running the application
 
